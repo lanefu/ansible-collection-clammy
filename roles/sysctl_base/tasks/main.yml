@@ -10,3 +10,19 @@
     state: present
     reload: true
 
+- name: log martians all interfaces
+  ansible.posix.sysctl:
+    name: net.ipv4.conf.all.log_martians
+    value: '1'
+    sysctl_set: true
+    state: present
+    reload: true
+
+# honestly not sure why we need both, but that's a google for later
+- name: log martians default
+  ansible.posix.sysctl:
+    name: net.ipv4.conf.default.log_martians
+    value: '1'
+    sysctl_set: true
+    state: present
+    reload: true
