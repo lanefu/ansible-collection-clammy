@@ -1,0 +1,12 @@
+---
+# tasks file for sysctl_base
+# lots of tunables for later probably https://www.kernel.org/doc/html/latest/networking/ip-sysctl.html
+
+- name: enable ip4 routing
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    sysctl_set: true
+    state: present
+    reload: true
+
