@@ -1,0 +1,11 @@
+---
+# tasks file for foomuuri
+
+## debian pacakages only in sid or bookworm backports
+- name: install packages
+  apt:
+    name: "{{ foomuuri_apt_packages }}"
+    state: present
+
+## we can hanve nice things
+## https://github.com/FoobarOy/foomuuri/wiki

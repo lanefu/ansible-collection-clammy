@@ -1,0 +1,26 @@
+---
+# defaults file for foomuuri
+
+foomuuri_apt_packages:
+  - foomuuri
+  - foomuuri-firewalld
+
+
+
+foomuuri_config_log_rate: "1/second burst 3 packets"
+foomuuri_config_log_input: yes
+foomuuri_config_log_output: yes
+foomuuri_config_log_forward: yes
+foomuuri_config_log_rpfilter: yes
+foomuuri_config_log_invalid: no
+foomuuri_config_log_smurfs: no
+foomuuri_config_log_level: "level info"
+foomuuri_config_localhost_zone: localhost
+foomuuri_config_dbus_zone: public
+foomuuri_config_rpfilter: yes
+foomuuri_config_counter: no
+foomuuri_config_set_size: 65535
+foomuuri_config_recursion_limit: 65535
+foomuuri_config_dbus_firewalld: no
+foomuuri_config_nft_bin: nft
+
