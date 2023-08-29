@@ -1,0 +1,95 @@
+---
+- name: Debian | Add upstream repo
+  when: frr_use_upstream_repo_debian
+  block:
+    - name: Debian | Install FRR apt repo key
+      ansible.builtin.apt_key:
+        url: https://deb.frrouting.org/frr/keys.asc
+        state: present
+      become: true
+      register: add_repository_key
+      ignore_errors: true
+
+    - name: Debian | Ensure curl & gnupg is present (on older systems without SNI).
+      ansible.builtin.package:
+        name:
+          - curl
+          - gnupg
+        state: present
+      become: true
+      when: add_repository_key is failed
+
+    - name: Debian | Add FRR apt key (alternative for older systems without SNI).
+      ansible.builtin.shell:
+        cmd: |
+          set -o pipefail
+          curl -sSL https://deb.frrouting.org/frr/keys.asc | sudo apt-key add -
+      args:
+        executable: "/bin/bash"
+      become: true
+      changed_when: false
+      when: add_repository_key is failed
+
+    - name: Debian | Ensure apt-transport-https is present to enable https repositories
+      ansible.builtin.package:
+        name: apt-transport-https
+        state: present
+      become: true
+
+    - name: Debian | Install FRR apt repo
+      ansible.builtin.apt_repository:
+        repo: "{{ frr_apt_repository }}"
+        state: present
+        mode: "0644"
+
+- name: Debian | Remove upstream repo
+  ansible.builtin.apt_repository:
+    repo: "{{ frr_apt_repository }}"
+    state: absent
+    update_cache: true
+  become: true
+  when: not frr_use_upstream_repo_debian
+
+- name: Debian | Remove Quagga
+  ansible.builtin.package:
+    name: quagga
+    state: absent
+  become: true
+
+- name: Debian | Install FRR
+  ansible.builtin.package:
+    name: "{{ frr_packages }}"
+    state: "{{ 'latest' if frr_apt_always_install_latest else 'present' }}"
+  become: true
+  notify:
+    - restart frr
+
+- name: Debian | Touch FRR reload log
+  ansible.builtin.file:
+    path: /var/log/frr/frr-reload.log
+    state: touch
+    owner: frr
+    group: frr
+    mode: 0644
+    modification_time: preserve
+    access_time: preserve
+  become: true
+
+- name: Debian | Stat defaut config
+  ansible.builtin.stat:
+    path: /etc/default/frr
+  register: conf_stat
+  when:
+    - frr_version > "6.0"
+
+- name: Debian | Remove old /etc/default/frr
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  notify:
+    - restart frr
+    - start frr
+  when:
+    - frr_version > "6.0"
+  with_items:
+    - /etc/default/frr

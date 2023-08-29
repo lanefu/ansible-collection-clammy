@@ -1,0 +1,58 @@
+---
+# handlers file for ansible-frr
+- name: Full restart frr
+  ansible.builtin.service:
+    name: frr
+    state: restarted
+    enabled: true
+  become: true
+  listen: "restart frr"
+
+- name: Reload frr
+  ansible.builtin.service:
+    name: frr
+    state: reloaded
+    enabled: true
+  become: true
+  listen: "reload frr"
+  when: frr_reload
+
+- name: Start frr
+  ansible.builtin.service:
+    name: frr
+    state: started
+    enabled: true
+  become: true
+  listen: "start frr"
+
+- name: Clear bgp frr
+  ansible.builtin.shell:
+    cmd: 'vtysh -c "clear ip bgp * soft out"'
+  become: true
+  listen: "clear bgp frr"
+  when: frr_clear_bgp_on_change
+
+## Quagga restart
+- name: Full restart quagga
+  ansible.builtin.service:
+    name: quagga
+    state: restarted
+    enabled: true
+  become: true
+  listen: "restart quagga"
+
+- name: Reload quagga
+  ansible.builtin.service:
+    name: quagga
+    state: reloaded
+    enabled: true
+  become: true
+  listen: "reload quagga"
+
+- name: Start quagga
+  ansible.builtin.service:
+    name: quagga
+    state: started
+    enabled: true
+  become: true
+  listen: "start quagga"

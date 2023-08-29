@@ -1,0 +1,54 @@
+---
+- name: Monitor | Ensuring /opt/frr/monitoring exists
+  ansible.builtin.file:
+    path: /opt/frr/monitoring
+    state: directory
+    mode: 0600
+  become: true
+
+- name: Monitor | Capturing sudo Path
+  ansible.builtin.command:
+    cmd: which sudo
+  register: _frr_sudo_path
+  changed_when: false
+
+- name: Monitor | Capturing vtysh Path
+  ansible.builtin.command:
+    cmd: which vtysh
+  register: _frr_vtysh_path
+  changed_when: false
+
+- name: Monitor | Copying Monitoring Scripts
+  ansible.builtin.template:
+    src: "opt/frr/monitoring/{{ item }}.j2"
+    dest: "/opt/frr/monitoring/{{ item }}"
+    mode: 0777
+  become: true
+  when: not ansible_check_mode
+  with_items:
+    - bgp_neighbor_data.py
+    - output_module.py
+
+- name: Monitor | Checking If FRR Service Is Running
+  ansible.builtin.service:
+    name: frr
+    enabled: true
+  register: _frr_service_status
+
+- name: Monitor | Capturing BGP Peers
+  ansible.builtin.command:
+    cmd: vtysh -c "sh ip bgp sum json"
+  become: true
+  register: _frr_bgp_summary
+  changed_when: false
+  when: >
+    frr_daemons['bgpd'] and
+    _frr_service_status['status']['SubState'] == "running"
+
+- name: Monitor | Debug
+  ansible.builtin.debug:
+    var: _frr_bgp_summary['stdout']
+    verbosity: 1
+  when:
+    - _frr_bgp_summary['stdout'] is defined
+    - _frr_bgp_summary['stdout'] != "" # noqa empty-string-compare
