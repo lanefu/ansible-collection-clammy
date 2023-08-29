@@ -1,0 +1,57 @@
+---
+- name: Config | Configuring vtysh.conf
+  ansible.builtin.template:
+    backup: yes
+    src: etc/frr/vtysh.conf.j2
+    dest: /etc/frr/vtysh.conf
+    owner: frr
+    group: frr
+    mode: u=rw,g=r,o=
+  become: true
+
+- name: Config | Configuring daemons
+  ansible.builtin.template:
+    backup: yes
+    src: etc/frr/daemons.j2
+    dest: /etc/frr/daemons
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=r
+  become: true
+  notify:
+    - reload frr
+    - start frr
+
+- name: Config | Configuring debian.conf (debian version of daemons)
+  ansible.builtin.template:
+    backup: yes
+    src: etc/frr/debian.conf.j2
+    dest: /etc/frr/debian.conf
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=r
+  become: true
+  notify:
+    - reload frr
+    - start frr
+  when: ansible_os_family == "Debian"
+
+- name: Config | Configuring FRR
+  ansible.builtin.template:
+    backup: yes
+    src: etc/frr/frr.conf.j2
+    dest: /etc/frr/frr.conf
+    owner: frr
+    group: frr
+    mode: u=rw,g=r,o=r
+  become: true
+  notify:
+    - reload frr
+    - start frr
+    - clear bgp frr
+
+- name: Config | Ensure FRR service is enabled
+  ansible.builtin.service:
+    name: frr
+    enabled: true
+  become: true

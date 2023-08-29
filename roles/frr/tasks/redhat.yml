@@ -1,0 +1,66 @@
+---
+- name: Redhat | Installing Pre-Reqs
+  ansible.builtin.yum:
+    name: ["iproute", "sudo", "which"]
+    state: present
+  become: true
+  when: ansible_distribution != "Fedora"
+
+- name: Redhat | Installing FRR repository
+  ansible.builtin.yum:
+    name: "{{ frr_rpm_repository }}"
+    state: present
+    disable_gpg_check: true
+  become: true
+  when:
+    - ansible_os_family == "RedHat"
+    - ansible_distribution_major_version > "7"
+    - not frr_os_rpm
+
+- name: Redhat | Installing FRR repository ignore SSL
+  ansible.builtin.yum:
+    name: "{{ frr_rpm_repository }}"
+    state: present
+    validate_certs: false
+  become: true
+  when:
+    - ansible_os_family == "RedHat"
+    - ansible_distribution_major_version <= "7"
+    - not frr_os_rpm
+
+- name: Redhat | Ensure Quagga is removed
+  ansible.builtin.package:
+    name: quagga
+    state: absent
+  become: true
+
+- name: Redhat | Installing FRR from repository
+  ansible.builtin.yum:
+    name: "{{ frr_packages }}"
+    state: present
+  become: true
+  when:
+    - frr_rpms is not defined
+  notify:
+    - restart frr
+
+- name: Redhat | Installing FRR from RPMs
+  ansible.builtin.yum:
+    name: "{{ frr_rpms }}"
+    state: present
+  become: true
+  when:
+    - frr_rpms is defined
+  notify:
+    - restart frr
+
+- name: Redhat | Touch FRR reload log
+  ansible.builtin.file:
+    path: /var/log/frr/frr-reload.log
+    state: touch
+    owner: frr
+    group: frr
+    mode: 0644
+    modification_time: preserve
+    access_time: preserve
+  become: true
