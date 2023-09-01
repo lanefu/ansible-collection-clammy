@@ -1,2 +1,6 @@
 ---
 # handlers file for foomuuri
+
+- name: reload foomuuri service
+  debug:
+    msg: "foomuuri pretend reloaded"

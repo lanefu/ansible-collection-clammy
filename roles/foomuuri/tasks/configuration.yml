@@ -1,0 +1,14 @@
+---
+- name: generate foomuuri.conf
+  template:
+    src: foomuuri.conf.j2
+    dest: "{{ foomuuri_conf_dir}}/foomuuri.conf"
+    mode: '0600'
+  notify: reload foomuuri service
+
+- name: generate zones.conf
+  template:
+    src: zones.conf.j2
+    dest: "{{ foomuuri_conf_dir}}/zones.conf"
+    mode: '0600'
+  notify: reload foomuuri service

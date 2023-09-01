@@ -9,3 +9,8 @@
 
 ## we can hanve nice things
 ## https://github.com/FoobarOy/foomuuri/wiki
+
+- name: generate configuration files
+  include_tasks: configuration.yml
+  tags:
+    - config

@@ -1,0 +1,8 @@
+zone {
+  localhost            # There can be no interface in localhost
+
+{% for item in foomuuri_zone_map %}
+   {{ item.zone }}    {% for interface in item.interfaces %} {{ interface }}{% endfor %}
+
+{% endfor %}
+}
