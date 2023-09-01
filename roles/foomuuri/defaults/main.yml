@@ -8,7 +8,7 @@ foomuuri_apt_packages:
 foomuuri_conf_dir: "/etc/foomuuri"
 
 foomuuri_zone_map:
-  - zone: wan
+  - zone: public
     interfaces:
       - eth0
   - zone: internal
