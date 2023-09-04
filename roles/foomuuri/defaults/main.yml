@@ -7,17 +7,21 @@ foomuuri_apt_packages:
 
 foomuuri_conf_dir: "/etc/foomuuri"
 
-foomuuri_zone_map:
-  - zone: public
-    interfaces:
-      - eth0
-  - zone: internal
-    interfaces:
-      - eth1
-  - zone: dmz
-    interfaces:
-      - eth2
-      - eth3
+foomuuri_networks:
+  eth0:
+    interface: eth0
+    zone: public
+  eth1:
+    interface: eth1
+    zone: internal
+  eth2:
+    interface: eth2
+    zone: dmz
+  eth3:
+    interface: eth3
+    zone: dmz
+
+foomuuri_zone_map: "{{ foomuuri_networks | lanefu.clammy.interfaces_by_zone }}"
 
 foomuuri_config_log_rate: "1/second burst 3 packets"
 foomuuri_config_log_input: yes
