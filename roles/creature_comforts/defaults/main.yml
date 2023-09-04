@@ -1,0 +1,13 @@
+---
+# defaults file for creature_comforts
+
+comforts_packages_bandwith:
+  - vnstat
+  - bwmon
+
+comforts_network_utils:
+  - dnsutils
+  - mtr
+
+comforts_packages_all: "{{ comforts_packages_bandwith }}"
+
