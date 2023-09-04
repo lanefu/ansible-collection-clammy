@@ -23,6 +23,35 @@ foomuuri_networks:
 
 foomuuri_zone_map: "{{ foomuuri_networks | lanefu.clammy.interfaces_by_zone }}"
 
+foomuuri_zone_policy:
+  localhost:
+    from_zone: 
+      - any:
+          description: my any rules
+          rules:
+            - ping
+      - public:
+          description: my public rules
+          rules:
+            - https
+            - reject log
+      - internal:
+          description: Accept DNS queries to internal, in addition to localhost-any rules.
+          rules:
+            - dns
+            - ssh
+            - reject log
+  internal:
+    from_zone:
+      - any:
+          description: allow more default services
+          rules:
+            - ping
+            - dns
+            - http
+            - https
+            - http-alt
+
 foomuuri_config_log_rate: "1/second burst 3 packets"
 foomuuri_config_log_input: yes
 foomuuri_config_log_output: yes
