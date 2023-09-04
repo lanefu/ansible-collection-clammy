@@ -1,2 +1,8 @@
 ---
 # tasks file for creature_comforts
+
+- name: install creature comfort packages
+  apt:
+    name: "{{ comforts_packages_all }}"
+    state: present
+

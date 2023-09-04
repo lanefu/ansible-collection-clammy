@@ -3,11 +3,11 @@
 
 comforts_packages_bandwith:
   - vnstat
-  - bwmon
+  - bmon
 
-comforts_network_utils:
+comforts_packages_network_utils:
   - dnsutils
   - mtr
 
-comforts_packages_all: "{{ comforts_packages_bandwith }}"
+comforts_packages_all: "{{ comforts_packages_bandwith + comforts_packages_network_utils }}"
 
