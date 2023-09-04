@@ -12,3 +12,17 @@
     dest: "{{ foomuuri_conf_dir}}/zones.conf"
     mode: '0600'
   notify: reload foomuuri service
+
+- name: "assure {{ foomuuri_conf_dir }}/zone_policies.d dir exists"
+  file:
+    path: "{{ foomuuri_conf_dir }}/zone_policies.d"
+    state: directory
+    mode: '0700'
+
+- name: generate zone policy files
+  template:
+    src: zone_policy.conf.j2
+    dest: "{{ foomuuri_conf_dir}}/zone_policies.d/{{ item.key }}.conf"
+    mode: '0600'
+  loop: "{{ foomuuri_zone_policy | dict2items }}"
+  notify: reload foomuuri service
