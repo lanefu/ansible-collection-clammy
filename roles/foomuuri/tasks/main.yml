@@ -13,7 +13,7 @@
 - name: generate configuration files
   include_tasks: configuration.yml
   tags:
-    - config
+    - foomuuri_config
 
 - name: enable foomuuri service on startup
   systemd:
@@ -24,4 +24,9 @@
   notify:
     - validate foomuuri configuration 
     - start foomuuri service
+
+- name: Flush handlers to apply firewall settings now
+  meta: flush_handlers
+  tags:
+    - foomuuri_config
 
