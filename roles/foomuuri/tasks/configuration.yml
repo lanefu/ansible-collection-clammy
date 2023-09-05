@@ -4,14 +4,18 @@
     src: foomuuri.conf.j2
     dest: "{{ foomuuri_conf_dir}}/foomuuri.conf"
     mode: '0600'
-  notify: reload foomuuri service
+  notify:
+    - validate foomuuri configuration 
+    - reload foomuuri service
 
 - name: generate zones.conf
   template:
     src: zones.conf.j2
     dest: "{{ foomuuri_conf_dir}}/zones.conf"
     mode: '0600'
-  notify: reload foomuuri service
+  notify:
+    - validate foomuuri configuration 
+    - reload foomuuri service
 
 - name: "assure {{ foomuuri_conf_dir }}/zone_policies.d dir exists"
   file:
@@ -25,4 +29,6 @@
     dest: "{{ foomuuri_conf_dir}}/zone_policies.d/{{ item.key }}.conf"
     mode: '0600'
   loop: "{{ foomuuri_zone_policy | dict2items }}"
-  notify: reload foomuuri service
+  notify:
+    - validate foomuuri configuration 
+    - reload foomuuri service

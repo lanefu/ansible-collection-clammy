@@ -14,3 +14,14 @@
   include_tasks: configuration.yml
   tags:
     - config
+
+- name: enable foomuuri service on startup
+  systemd:
+    name: foomuuri
+    enabled: true
+  when:
+     - foomuuri_start_allowed is truthy(convert_bool=True)
+  notify:
+    - validate foomuuri configuration 
+    - start foomuuri service
+

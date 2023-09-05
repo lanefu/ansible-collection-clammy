@@ -1,6 +1,20 @@
 ---
 # handlers file for foomuuri
 
+- name: validate foomuuri configuration
+  command: foomuuri check
+  changed_when: false
+
 - name: reload foomuuri service
-  debug:
-    msg: "foomuuri pretend reloaded"
+  service:
+    name: foomuuri
+    state: reloaded
+  when:
+     - foomuuri_start_allowed is truthy(convert_bool=True)
+
+- name: start foomuuri service
+  service:
+    name: foomuuri
+    state: started
+  when:
+     - foomuuri_start_allowed is truthy(convert_bool=True)

@@ -7,6 +7,9 @@ foomuuri_apt_packages:
 
 foomuuri_conf_dir: "/etc/foomuuri"
 
+# allow ansible to start firewall
+foomuuri_start_allowed: no
+
 foomuuri_networks:
   eth0:
     interface: eth0
