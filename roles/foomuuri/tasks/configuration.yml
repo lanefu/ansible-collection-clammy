@@ -32,3 +32,19 @@
   notify:
     - validate foomuuri configuration 
     - reload foomuuri service
+
+- name: "assure {{ foomuuri_conf_dir }}/templates.d dir exists"
+  file:
+    path: "{{ foomuuri_conf_dir }}/templates.d"
+    state: directory
+    mode: '0700'
+
+- name: generate foomuuri config templates
+  template:
+    src: template.conf.j2
+    dest: "{{ foomuuri_conf_dir}}/templates.d/{{ item.key }}.conf"
+    mode: '0600'
+  loop: "{{ foomuuri_templates | dict2items }}"
+  notify:
+    - validate foomuuri configuration 
+    - reload foomuuri service

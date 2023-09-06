@@ -5,6 +5,9 @@
     msg: "{{ lookup('template', 'zone_policy.conf.j2') }}"
   loop: "{{ foomuuri_zone_policy | dict2items }}"
 
+- debug: 
+    msg: "{{ lookup('template', 'template.conf.j2') }}"
+  loop: "{{ foomuuri_templates | dict2items }}"
 #- debug:
 #    msg: "{{ item.key }} - {{ item.value.from_zone }}"
 #  loop: "{{ foomuuri_zone_policy | dict2items }}"

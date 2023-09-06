@@ -26,6 +26,22 @@ foomuuri_networks:
 
 foomuuri_zone_map: "{{ foomuuri_networks | lanefu.clammy.interfaces_by_zone }}"
 
+foomuuri_templates:
+  outgoing_services:
+    description: common outgoing services
+    rules:
+      - dhcp-server
+      - domain
+      - https
+      - ntp
+      - ping
+      - ssh
+  iot_services:
+    description: common outgoing services
+    rules:
+      - mqtt
+      - secure-mqtt
+
 foomuuri_zone_policy:
   localhost:
     from_zone: 
