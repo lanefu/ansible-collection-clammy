@@ -26,6 +26,10 @@ foomuuri_networks:
 
 foomuuri_zone_map: "{{ foomuuri_networks | lanefu.clammy.interfaces_by_zone }}"
 
+foomuuri_macros:
+ - iperf3 tcp 5201
+ - iperf3more tcp 5202
+
 foomuuri_templates:
   outgoing_services:
     description: common outgoing services

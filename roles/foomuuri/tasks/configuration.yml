@@ -33,6 +33,15 @@
     - validate foomuuri configuration 
     - reload foomuuri service
 
+- name: generate macros.conf
+  template:
+    src: macros.conf.j2
+    dest: "{{ foomuuri_conf_dir}}/macros.conf"
+    mode: '0600'
+  notify:
+    - validate foomuuri configuration 
+    - reload foomuuri service
+
 - name: "assure {{ foomuuri_conf_dir }}/templates.d dir exists"
   file:
     path: "{{ foomuuri_conf_dir }}/templates.d"
