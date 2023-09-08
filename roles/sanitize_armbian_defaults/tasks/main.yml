@@ -1,0 +1,42 @@
+---
+- name: drink systemd koolaid
+  apt:
+    name: "{{ systemd_koolaid_packages }}"
+    state: present
+  vars:
+    systemd_koolaid_packages:
+      - systemd-timesyncd
+      - systemd-cron
+
+- name: remove mask from networkd
+  systemd_service:
+    name: systemd-networkd
+    masked: false
+
+- name: purge network manager
+  apt:
+    name: network-manager
+    state: absent
+
+- name: remove armbian-netplan.yml
+  file:
+    path: /etc/netplan/armbian-default.yaml
+    state: absent
+
+##FIXME this shouold be conditional
+- name: purge other things i dont want
+  apt:
+    name: "{{ uninstall_package_list }}"
+    state: absent
+  vars:
+    uninstall_package_list:
+      - networkmanager-openvpn
+      - openvpn
+      - wpasupplicant
+      - chrony
+
+- name: harden ssh
+  include_tasks: harden.yml
+  tags:
+    - harden
+    - ssh

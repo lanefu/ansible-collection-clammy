@@ -1,0 +1,22 @@
+---
+# system hardening
+- name: disallow ssh passwords
+  lineinfile:
+    regex: PasswordAuthentication
+    line: PasswordAuthentication no
+    path: /etc/ssh/sshd_config
+    state: present
+  tags:
+    - harden
+    - ssh
+  notify: restart sshd
+- name: disallow ssh rootlogin
+  lineinfile:
+    regex: PermitRootLogin
+    line: PermitRootLogin no
+    path: /etc/ssh/sshd_config
+    state: present
+  tags:
+    - harden
+    - ssh
+  notify: restart sshd

@@ -1,0 +1,9 @@
+---
+# handlers file for sanitize_armbian_defaults
+
+## needs ot restart, but im afraid.. will figure out later
+- name: restart sshd
+  service:
+    name: sshd
+    state: restarted
+  tags: ['harden', 'ssh']
