@@ -57,3 +57,12 @@
   notify:
     - validate foomuuri configuration 
     - reload foomuuri service
+
+- name: generate nat.conf
+  template:
+    src: nat.conf.j2
+    dest: "{{ foomuuri_conf_dir}}/nat.conf"
+    mode: '0600'
+  notify:
+    - validate foomuuri configuration 
+    - reload foomuuri service
