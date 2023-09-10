@@ -1,6 +1,10 @@
 ---
 # defaults file for creature_comforts
 
+comforts_packages_deps:
+  - jq
+  - bat
+
 comforts_packages_bandwith:
   - vnstat
   - bmon
@@ -9,5 +13,11 @@ comforts_packages_network_utils:
   - dnsutils
   - mtr
 
-comforts_packages_all: "{{ comforts_packages_bandwith + comforts_packages_network_utils }}"
+comforts_packages_all: "{{ comforts_packages_deps + comforts_packages_bandwith + comforts_packages_network_utils }}"
 
+comforts_scripts_install_dir: /usr/local/bin
+
+comforts_scripts_dhcp:
+  - clammy_leases.sh
+
+comforts_scripts_all: "{{ comforts_scripts_dhcp }}"
