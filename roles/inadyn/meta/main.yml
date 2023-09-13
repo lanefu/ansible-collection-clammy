@@ -1,0 +1,29 @@
+galaxy_info:
+  author: Jean-Kevin KPADEY
+  namespace: mivek
+  description: This role installs and configures inadyn
+  role_name: inadyn
+  issue_tracker_url: https://github.com/mivek/ansible-role-inadyn/issues
+
+  license: GPL-3.0
+
+  min_ansible_version: '2.9'
+
+  platforms:
+  - name: Ubuntu
+    versions:
+      - focal
+      - jammy
+  - name: Debian
+    versions:
+      - buster
+      - bullseye
+      - bookworm
+
+  galaxy_tags:
+    - inadyn
+    - dns
+    - system
+    - networking
+
+dependencies: []

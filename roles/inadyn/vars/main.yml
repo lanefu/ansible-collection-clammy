@@ -1,0 +1,12 @@
+---
+# vars file for inadyn
+
+__inadyn_config_path: /etc/inadyn.conf
+
+__inadyn_source_dependencies:
+  - gnutls-dev
+  - libconfuse-dev
+  - build-essential
+  - pkg-config
+
+__inadyn_source_release_url: https://github.com/troglobit/inadyn/releases/download/v{{ inadyn_version }}/inadyn-{{ inadyn_version }}.tar.xz

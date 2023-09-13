@@ -1,0 +1,14 @@
+---
+inadyn_install_source: false
+inadyn_check_config: false
+inadyn_providers:
+  - name: duckdns.org
+    username: token
+    password: password
+    hostname: host.duck.com
+  - name: cloudflare.com
+    username: myzone
+    password: mysecrettoken
+    hostname:  hostname.cloudflare.com
+    ttl: 1
+    proxied: false

@@ -1,0 +1,21 @@
+---
+
+inadyn_install_source: true
+inadyn_version: 2.10.0
+inadyn_providers:
+  - name: freedns
+    username: freedns_user1
+    password: strongpassword
+    index: 1
+    hostname: free.example.com
+  - name: freedns
+    username: freedns_user2
+    password: strongpassword
+    index: 2
+    hostname: free2.example.com
+  - name: dyn
+    ssl: true
+    username: charlie
+    password: snoopy
+    hostname: "{ peanuts,woodstock }"
+    user_agent: "Mozilla/4.0"

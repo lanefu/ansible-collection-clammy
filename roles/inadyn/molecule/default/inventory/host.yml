@@ -1,0 +1,4 @@
+all:
+  hosts:
+    instance1:
+    instance2:
