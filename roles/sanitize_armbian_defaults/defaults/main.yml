@@ -1,2 +1,3 @@
 ---
 # defaults file for sanitize_armbian_defaults
+disable_armbian_apt_repo: True

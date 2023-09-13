@@ -23,7 +23,7 @@
     path: /etc/netplan/armbian-default.yaml
     state: absent
 
-##FIXME this shouold be conditional
+##FIXME this should be conditional some people will want wifi one day
 - name: purge other things i dont want
   apt:
     name: "{{ uninstall_package_list }}"
@@ -34,6 +34,21 @@
       - openvpn
       - wpasupplicant
       - chrony
+
+- name: check for armbian repo
+  stat: 
+    path: /etc/apt/sources.list.d/armbian.list
+  register: stat_armbian_apt
+  when: disable_armbian_apt_repo
+
+## listen I love armbian, but it's just not safe to leave enabled
+- name: friends dont let friends brick their router on kernel updates
+  command: "mv /etc/apt/sources.list.d/armbian.list /etc/apt/sources.list.d/armbian.list.disabled"
+  args:
+    creates: /etc/apt/sources.list.d/armbian.list.disabled
+  when:
+    - stat_armbian_apt.stat.exists
+    - disable_armbian_apt_repo
 
 - name: harden ssh
   include_tasks: harden.yml
