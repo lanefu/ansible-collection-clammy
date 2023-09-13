@@ -1,0 +1,26 @@
+---
+
+- name: install optimization packages
+  apt:
+    name: "{{ optimization_packages }}"
+    state: present
+  vars:
+    optimization_packages:
+      - irqbalance
+      - cpufrequtils
+
+- name: set scheduler to shedutil
+  lineinfile:
+    path: /etc/default/cpufrequtils
+    regexp: 'GOVERNOR'
+    line: GOVERNOR=schedutil
+  notify:
+    - restart cpufrequtils
+
+- name: set scheduler to shedutil
+  lineinfile:
+    path: /etc/default/cpufrequtils
+    regexp: 'ENABLE='
+    line: ENABLE=true
+  notify:
+    - restart cpufrequtils

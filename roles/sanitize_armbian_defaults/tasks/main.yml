@@ -55,3 +55,10 @@
   tags:
     - harden
     - ssh
+
+- name: armbian alternative optimizations
+  include_tasks: alternative_optimizations.yml
+  when:
+    - enable_armbian_alternative_optimizations
+  tags:
+    - optimize 

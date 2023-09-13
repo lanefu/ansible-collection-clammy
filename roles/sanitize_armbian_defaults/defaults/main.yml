@@ -1,3 +1,4 @@
 ---
 # defaults file for sanitize_armbian_defaults
 disable_armbian_apt_repo: True
+enable_armbian_alternative_optimizations: True
