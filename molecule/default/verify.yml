@@ -1,0 +1,49 @@
+---
+# This is an example playbook to execute Ansible tests.
+
+- name: Verify
+  hosts: all
+  check_mode: true
+  tasks:
+    - name: Check the configuration file exists [1/2]
+      ansible.builtin.file:
+        path: /etc/inadyn.conf
+        state: file
+      register: __inadyn_conf
+
+    - name: Check the configuration file exists [2/2]
+      ansible.builtin.assert:
+        that:
+          - __inadyn_conf.changed is false
+
+    - name: Gather the package facts
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Check package inadyn is installed
+      ansible.builtin.assert:
+        that:
+          - ansible_facts.packages['inadyn']
+      when: ansible_host == 'instance1'
+
+    - name: Check inadyn manual installation
+      ansible.builtin.file:
+        path: /usr/local/sbin/inadyn
+        state: file
+      register: __inadyn_executable
+      when: ansible_host == 'instance2'
+
+    - name: Check manual installation
+      ansible.builtin.assert:
+        that:
+          - __inadyn_executable.changed is false
+      when: ansible_host == 'instance2'
+
+#    - name: Print service facts
+#      ansible.builtin.debug:
+#        var: ansible_facts.services
+#
+#    - name: Verify that service is up
+#      ansible.builtin.assert:
+#        that:
+#          - ansible_facts.services['inadyn'].state == 'running'

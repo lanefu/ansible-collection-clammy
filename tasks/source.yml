@@ -1,0 +1,22 @@
+---
+
+- name: Download the archive
+  ansible.builtin.unarchive:
+    src: "{{ __inadyn_source_release_url }}"
+    dest: /tmp
+    remote_src: true
+
+- name: Install build dependencies
+  ansible.builtin.apt:
+    update_cache: true
+    name: "{{ __inadyn_source_dependencies }}"
+
+- name: Configure and build
+  ansible.builtin.command:
+    cmd: "{{ item }}"
+    chdir: "/tmp/inadyn-{{ inadyn_version }}"
+  loop:
+    - "./configure --sysconfdir=/etc --localstatedir=/var"
+    - "make -j5"
+    - "make install-strip"
+  changed_when: false

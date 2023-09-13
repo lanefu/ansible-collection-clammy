@@ -1,0 +1,36 @@
+---
+# tasks file for inadyn
+
+- name: Build from source
+  ansible.builtin.import_tasks:
+    file: source.yml
+  when: inadyn_install_source is defined and inadyn_install_source
+
+- name: Install inadyn
+  ansible.builtin.apt:
+    update_cache: true
+    name: "inadyn"
+  when: not inadyn_install_source
+
+- name: Deploy the configuration
+  ansible.builtin.template:
+    src: inadyn.conf.j2
+    dest: "{{ __inadyn_config_path }}"
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart inadyn
+
+- name: Test the configuration
+  ansible.builtin.command:
+    cmd: inadyn --check-config -f "{{ __inadyn_config_path }}"
+  when: inadyn_check_config is defined and inadyn_check_config
+  changed_when: false
+
+- name: Enable inadyn daemon
+  ansible.builtin.lineinfile:
+    regexp: '^RUN_DAEMON='
+    line: 'RUN_DAEMON="yes"'
+    path: /etc/default/inadyn
+  when: not inadyn_install_source
+  notify: Restart inadyn

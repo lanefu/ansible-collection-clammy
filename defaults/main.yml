@@ -1,0 +1,10 @@
+---
+# defaults file for inadyn
+
+inadyn_period: 300
+inadyn_user_agent: "Mozilla/5.0"
+inadyn_install_source: false
+inadyn_check_config: true
+inadyn_version: 2.11.0
+
+inadyn_providers: []
