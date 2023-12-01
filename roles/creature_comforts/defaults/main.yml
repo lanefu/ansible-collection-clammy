@@ -8,6 +8,7 @@ comforts_packages_deps:
 comforts_packages_bandwith:
   - vnstat
   - bmon
+  - iftop
 
 comforts_packages_network_utils:
   - dnsutils
