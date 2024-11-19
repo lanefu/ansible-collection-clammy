@@ -48,24 +48,17 @@ foomuuri_templates:
 
 foomuuri_zone_policy:
   localhost:
-    from_zone: 
+    to_zone: 
       - any:
-          description: my any rules
+          description: permit local traffic on router to zones
           rules:
-            - ping
+            - template outgoing_services
       - public:
-          description: my public rules
+          description: allow traffic to internet
           rules:
-            - https
-            - reject log
-      - internal:
-          description: Accept DNS queries to internal, in addition to localhost-any rules.
-          rules:
-            - dns
-            - ssh
-            - reject log
+            - accept
   internal:
-    from_zone:
+    to_zone:
       - any:
           description: allow more default services
           rules:
@@ -74,6 +67,31 @@ foomuuri_zone_policy:
             - http
             - https
             - http-alt
+      - public:
+          description: allow traffic to internet
+          rules:
+            - accept
+      - dmz:
+          description: permit specific services to dmz
+          rules:
+            - template outgoing_services
+            - reject log
+  dmz:
+    to_zone:
+      - any:
+          description: allow ping and dns
+          rules:
+            - ping
+            - dns
+      - public:
+          description: allow traffic to internet
+          rules:
+            - accept
+      - internal:
+          description: permit dmz to access iot services on internal
+          rules:
+            - template iot_services
+            - reject log
 ## make sure booleans are strings in yes/no format
 foomuuri_config_log_rate: "1/second burst 3 packets"
 foomuuri_config_log_input: "yes"
