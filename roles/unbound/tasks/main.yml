@@ -1,5 +1,4 @@
 ---
-
 - name: Get current state via unbound control
   command: unbound-control status
   register: _unbound_status
@@ -12,6 +11,11 @@
 - name: include install.yml
   ansible.builtin.import_tasks: install.yml
   when: unbound_packages is defined
+
+- name: include fetch_root_hints.yml
+  ansible.builtin.import_tasks:
+    file: fetch_root_hints.yml
+  when: unbound_root_hints_url is defined
 
 - name: Configure unbound.conf
   template:
@@ -44,5 +48,4 @@
     state: started
     enabled: true
   when: unbound_enable_service
-
 # vim: set ts=2 sw=2:
