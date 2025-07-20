@@ -1,0 +1,12 @@
+---
+
+unbound_packages:
+  - unbound
+
+unbound_reloaded_state: "{{
+    'reloaded'
+    if unbound_control_enable == 'yes' and _unbound_status.rc|default(0) == 0
+    else 'restarted'
+  }}"
+
+# vim: set ts=2 sw=2:

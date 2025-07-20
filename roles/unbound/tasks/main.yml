@@ -1,0 +1,51 @@
+---
+- name: Get current state via unbound control
+  command: unbound-control status
+  register: _unbound_status
+  changed_when: false
+  failed_when: false
+
+- name: include dist_vars.yml
+  ansible.builtin.import_tasks: dist_vars.yml
+
+- name: include install.yml
+  ansible.builtin.import_tasks: install.yml
+  when: unbound_packages is defined
+
+- name: include fetch_root_hints.yml
+  ansible.builtin.import_tasks:
+    file: fetch_root_hints.yml
+  when: unbound_root_hints_url is defined
+
+- name: Configure unbound.conf
+  template:
+    src: unbound.conf.j2
+    dest: "{{ unbound_conf_path }}"
+  notify: restart unbound
+
+- name: Check if unbound_server.key is present
+  stat:
+    path: "{{ unbound_directory }}/unbound_server.key"
+  register: unbound_remote_keys
+- name: Setup certificates
+  command: unbound-control-setup
+  when: |
+    unbound_control_enable == "yes" and not unbound_remote_keys.stat.exists
+
+- name: include root_anchor.yml
+  ansible.builtin.import_tasks: root_anchor.yml
+  when: unbound_auto_trust_anchor_file|default(false)
+
+# Cannot move this part as the `verify` component of the previous task, because
+# unbound-checkconf fails if the file is outside {{ unbound_directory }}
+- name: Check unbound.conf
+  command: unbound-checkconf "{{ unbound_conf_path }}"
+  changed_when: false
+
+- name: Enable unbound service
+  service:
+    name: "{{ unbound_service_name }}"
+    state: started
+    enabled: true
+  when: unbound_enable_service
+# vim: set ts=2 sw=2:

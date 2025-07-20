@@ -1,0 +1,9 @@
+- name: Download root hints
+  ansible.builtin.get_url:
+    mode: "0640"
+    owner: "{{ unbound_username }}"
+    group: "{{ unbound_username }}"
+    url: "{{ unbound_root_hints_url }}"
+    dest: "{{ unbound_root_hints }}"
+    force: "{{ unbound_root_hints_force_download | default('') is truthy(convert_bool=true) | bool }}"
+    # force: "{{ unbound_root_hints_force_download }}"
