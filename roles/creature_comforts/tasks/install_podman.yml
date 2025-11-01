@@ -1,0 +1,22 @@
+- name: install podman base packages
+  apt:
+    name: "{{ comforts_packages_podman }}"
+    state: present
+
+- name: Create the custom Podman Network ('clammy_podman_net')
+  containers.podman.podman_network:
+    name: clammy_podman_net
+    state: present
+    driver: bridge
+    interface_name: "{{ comforts_podman_bridge_name }}"
+    subnet: "{{ comforts_podman_subnet }}"
+    gateway: "{{ comforts_podman_gateway }}"
+
+- name: Set 'clammy_podman_net' as the Podman default network
+  community.general.ini_file:
+    path: /etc/containers/containers.conf
+    section: network
+    option: default_network
+    value: '"clammy_podman_net"'
+    create: true
+    backup: true

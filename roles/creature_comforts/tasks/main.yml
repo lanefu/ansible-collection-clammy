@@ -14,3 +14,9 @@
     owner: root
     group: root
   loop: '{{ comforts_scripts_all }}'
+
+- name: configured podman for clammy-ng
+  include_tasks: install_podman.yml
+  when: comforts_use_podman | default(false) | bool
+  tags:
+    - comforts_podman
