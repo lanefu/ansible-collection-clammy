@@ -3,15 +3,14 @@
 
 - name: install creature comfort packages
   apt:
-    name: "{{ comforts_packages_all }}"
+    name: '{{ comforts_packages_all }}'
     state: present
 
 - name: install creatue comforts utility scripts
   copy:
-    src: "{{ item }}"
-    dest: "{{ comforts_scripts_install_dir }}/{{ item }}"
+    src: '{{ item }}'
+    dest: '{{ comforts_scripts_install_dir }}/{{ item }}'
     mode: '0755'
     owner: root
     group: root
-  loop: "{{ comforts_scripts_all }}"
-
+  loop: '{{ comforts_scripts_all }}'

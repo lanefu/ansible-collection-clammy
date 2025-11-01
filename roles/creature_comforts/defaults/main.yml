@@ -13,8 +13,14 @@ comforts_packages_bandwith:
 comforts_packages_network_utils:
   - dnsutils
   - mtr-tiny
+  - gping
 
-comforts_packages_all: "{{ comforts_packages_deps + comforts_packages_bandwith + comforts_packages_network_utils }}"
+comforts_packages_misc:
+  - btop
+
+comforts_packages_all: "{{ comforts_packages_deps + comforts_packages_bandwith + comforts_packages_network_utils + comforts_packages_misc }}"
+
+comforts_install_rustnet: true
 
 comforts_scripts_install_dir: /usr/local/bin
 
