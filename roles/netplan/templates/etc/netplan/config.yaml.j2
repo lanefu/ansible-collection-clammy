@@ -12,6 +12,10 @@ network:
   wifis:
 {{ netplan_configuration['network']['wifis']|to_nice_yaml|indent(4, true) }}
 {% endif %}
+{% if netplan_configuration['network']['dummy-devices'] is defined %}
+  dummy-devices:
+{{ netplan_configuration['network']['dummy-devices']|to_nice_yaml|indent(4, true) }}
+{% endif %}
 {% if netplan_configuration['network']['bonds'] is defined %}
   bonds:
 {{ netplan_configuration['network']['bonds']|to_nice_yaml|indent(4, true) }}
