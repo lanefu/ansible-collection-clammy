@@ -5,7 +5,6 @@
     state: present
   vars:
     systemd_koolaid_packages:
-      - systemd-timesyncd
       - systemd-cron
 
 - name: remove mask from networkd
@@ -33,10 +32,9 @@
       - networkmanager-openvpn
       - openvpn
       - wpasupplicant
-      - chrony
 
 - name: check for armbian repo
-  stat: 
+  stat:
     path: /etc/apt/sources.list.d/armbian.list
   register: stat_armbian_apt
   when: disable_armbian_apt_repo
@@ -61,4 +59,4 @@
   when:
     - enable_armbian_alternative_optimizations
   tags:
-    - optimize 
+    - optimize

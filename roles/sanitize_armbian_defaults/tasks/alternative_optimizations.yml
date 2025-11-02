@@ -1,5 +1,4 @@
 ---
-
 - name: install optimization packages
   apt:
     name: "{{ optimization_packages }}"
@@ -7,20 +6,28 @@
   vars:
     optimization_packages:
       - irqbalance
-      - cpufrequtils
+  tags:
+    - irqbalance
 
-- name: set scheduler to shedutil
-  lineinfile:
-    path: /etc/default/cpufrequtils
-    regexp: 'GOVERNOR'
-    line: GOVERNOR=schedutil
-  notify:
-    - restart cpufrequtils
+# new systemd quirk disables access to kernel tunables by default
+- name: Ensure irqbalance override directory exists
+  ansible.builtin.file:
+    path: /etc/systemd/system/irqbalance.service.d
+    state: directory
+    mode: "0755"
+  tags:
+    - irqbalance
 
-- name: set scheduler to shedutil
-  lineinfile:
-    path: /etc/default/cpufrequtils
-    regexp: 'ENABLE='
-    line: ENABLE=true
+- name: irqbalance override disable ProtectKernelTunables
+  ansible.builtin.ini_file:
+    path: /etc/systemd/system/irqbalance.service.d/override.conf
+    section: Service
+    option: ProtectKernelTunables
+    value: no
+    mode: "0644"
+    create: yes
   notify:
-    - restart cpufrequtils
+    - reload systemd daemon
+    - restart irqbalance service
+  tags:
+    - irqbalance
