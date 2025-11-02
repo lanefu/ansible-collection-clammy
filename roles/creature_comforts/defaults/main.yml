@@ -19,13 +19,16 @@ comforts_packages_network_utils:
 comforts_packages_misc:
   - btop
 
+comforts_packages_reporting:
+  - fwlogwatch
+
 comforts_packages_podman:
   - podman
   # for rootless execution
   - uidmap
   - passt
 
-comforts_packages_all: "{{ comforts_packages_deps + comforts_packages_bandwith + comforts_packages_network_utils + comforts_packages_misc }}"
+comforts_packages_all: "{{ comforts_packages_deps + comforts_packages_bandwith + comforts_packages_network_utils + comforts_packages_misc + comforts_packages_reporting }}"
 
 comforts_use_podman: false
 
@@ -33,6 +36,7 @@ comforts_scripts_install_dir: /usr/local/bin
 
 comforts_scripts_dhcp:
   - clammy_leases.sh
+  - firewall_report_wan_sample.sh
 
 comforts_scripts_podman_apps:
   - rustnet_wrapper.sh
