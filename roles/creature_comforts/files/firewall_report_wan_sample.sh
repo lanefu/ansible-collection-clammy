@@ -8,7 +8,7 @@ INTERFACE_FILTER="wan-localhost"
 # --------------------------
 
 sudo grep "${INTERFACE_FILTER}" "${LOG_FILE}" |
-  fwlogwatch \
+  sudo fwlogwatch \
     "${TIME_RANGE}" \
     -n \
     -N \
