@@ -1,2 +1,10 @@
 ---
-# defaults file for sysctl_base
+# defaults file for sysctl_base_base
+
+sysctl_base_enable_ip4_forwarding: true
+sysctl_base_enable_ip6_forwarding: true
+sysctl_base_ip4_log_martians: true
+# example of dict of extra sysctl settings
+# sysctl_base_extra_settings:
+#   "net.netfilter.nf_conntrack_udp_timeout": "60"
+#   "net.core.netdev_budget": "600"

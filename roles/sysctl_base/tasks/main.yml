@@ -1,11 +1,19 @@
 ---
-# tasks file for sysctl_base
+# tasks file for sysctl_base_base
 # lots of tunables for later probably https://www.kernel.org/doc/html/latest/networking/ip-sysctl.html
 
 - name: enable ip4 routing
   ansible.posix.sysctl:
-    name: net.ipv4.ip_forward
-    value: '1'
+    name: net.ipv4.conf.all.forwarding
+    value: "{{ sysctl_base_enable_ip4_forwarding | bool | ternary('1', '0') }}"
+    sysctl_set: true
+    state: present
+    reload: true
+
+- name: enable ip6 routing
+  ansible.posix.sysctl:
+    name: net.ipv6.conf.all.forwarding
+    value: "{{ sysctl_base_enable_ip6_forwarding | bool | ternary('1', '0') }}"
     sysctl_set: true
     state: present
     reload: true
@@ -13,7 +21,7 @@
 - name: log martians all interfaces
   ansible.posix.sysctl:
     name: net.ipv4.conf.all.log_martians
-    value: '1'
+    value: "{{ sysctl_base_ip4_log_martians | bool | ternary('1', '0') }}"
     sysctl_set: true
     state: present
     reload: true
@@ -22,7 +30,18 @@
 - name: log martians default
   ansible.posix.sysctl:
     name: net.ipv4.conf.default.log_martians
-    value: '1'
+    value: "{{ sysctl_base_ip4_log_martians | bool | ternary('1', '0') }}"
     sysctl_set: true
     state: present
     reload: true
+
+    # I don't know how to tune your router:  bring your own settings
+- name: "sysctl extra settings"
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    value: "{{ item.value }}"
+    sysctl_set: true
+    state: present
+    reload: true
+  loop: "{{ sysctl_base_extra_settings | dict2items }}"
+  when: sysctl_base_extra_settings is defined
