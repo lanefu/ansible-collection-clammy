@@ -7,7 +7,7 @@ MAX_ENTRIES="-M 50"
 INTERFACE_FILTER="wan-localhost"
 # --------------------------
 
-grep "${INTERFACE_FILTER}" "${LOG_FILE}" |
+sudo grep "${INTERFACE_FILTER}" "${LOG_FILE}" |
   fwlogwatch \
     "${TIME_RANGE}" \
     -n \
@@ -18,4 +18,5 @@ grep "${INTERFACE_FILTER}" "${LOG_FILE}" |
     - |
   batcat \
     --paging=never \
+    --style=plain \
     -l log
