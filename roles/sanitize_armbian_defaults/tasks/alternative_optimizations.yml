@@ -10,6 +10,8 @@
     - irqbalance
 
 # new systemd quirk disables access to kernel tunables by default
+# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1114676
+# should be resolved soon
 - name: Ensure irqbalance override directory exists
   ansible.builtin.file:
     path: /etc/systemd/system/irqbalance.service.d
