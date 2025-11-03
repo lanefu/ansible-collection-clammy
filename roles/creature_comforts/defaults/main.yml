@@ -37,6 +37,7 @@ comforts_scripts_install_dir: /usr/local/bin
 comforts_scripts_dhcp:
   - clammy_leases.sh
   - firewall_report_wan_sample.sh
+  - cpu_governor_control.sh
 
 comforts_scripts_podman_apps:
   - rustnet_wrapper.sh
