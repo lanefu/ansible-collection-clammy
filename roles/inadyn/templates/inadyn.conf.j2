@@ -4,6 +4,11 @@
 period            = {{ inadyn_period }}
 user-agent        = {{ inadyn_user_agent }}
 
+{% if inadyn_interface is defined %}
+iface             = {{ inadyn_interface }}
+
+{% endif %}
+
 {% for provider in inadyn_providers %}
 provider {{ provider.name }}{% if provider.index is defined and provider.index %}:{{ provider.index }}{% endif %} {
   username        = {{ provider.username }}
