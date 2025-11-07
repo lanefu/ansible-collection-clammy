@@ -4,7 +4,7 @@
 LOG_FILE="${LOG_FILE-/var/log/kern.log}"
 TIME_RANGE="-l 1d"
 MAX_ENTRIES="-M 50"
-INTERFACE_FILTER="wan-localhost"
+INTERFACE_FILTER="${INTERFACE_FILTER-wan-localhost}"
 # --------------------------
 
 sudo grep "${INTERFACE_FILTER}" "${LOG_FILE}" |
