@@ -2,33 +2,24 @@
 - name: Debian | Add upstream repo
   when: frr_use_upstream_repo_debian
   block:
-    - name: Debian | Install FRR apt repo key
-      ansible.builtin.apt_key:
+    - name: Debian | Download FRR apt repo key
+      ansible.builtin.get_url:
         url: https://deb.frrouting.org/frr/keys.asc
-        state: present
+        dest: /tmp/frr-key.asc
+        mode: '0644'
       become: true
-      register: add_repository_key
-      ignore_errors: true
 
-    - name: Debian | Ensure curl & gnupg is present (on older systems without SNI).
+    - name: Debian | Ensure gnupg is present
       ansible.builtin.package:
-        name:
-          - curl
-          - gnupg
+        name: gnupg
         state: present
       become: true
-      when: add_repository_key is failed
 
-    - name: Debian | Add FRR apt key (alternative for older systems without SNI).
+    - name: Debian | Convert GPG key for apt
       ansible.builtin.shell:
-        cmd: |
-          set -o pipefail
-          curl -sSL https://deb.frrouting.org/frr/keys.asc | sudo apt-key add -
-      args:
-        executable: "/bin/bash"
+        cmd: gpg --dearmor < /tmp/frr-key.asc > /etc/apt/trusted.gpg.d/frr.gpg
       become: true
-      changed_when: false
-      when: add_repository_key is failed
+      changed_when: true
 
     - name: Debian | Ensure apt-transport-https is present to enable https repositories
       ansible.builtin.package:
