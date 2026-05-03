@@ -1,0 +1,3 @@
+---
+netplan_packages:
+  - netplan.io

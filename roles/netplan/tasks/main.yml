@@ -1,7 +1,9 @@
 ---
+- name: Gather OS specific netplan vars
+  ansible.builtin.include_tasks: dist_vars.yml
+
 - import_tasks: netplan.yml
   when: netplan_enabled
 
 - meta: flush_handlers
-
 
