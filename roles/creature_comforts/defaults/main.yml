@@ -15,6 +15,7 @@ comforts_packages_network_utils:
   - dnsutils
   - mtr-tiny
   - gping
+  - iproute2
 
 comforts_packages_misc:
   - btop
