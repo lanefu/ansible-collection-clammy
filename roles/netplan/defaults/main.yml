@@ -91,3 +91,9 @@ netplan_pri_domain: example.org
 netplan_check_install: True
 
 netplan_apply: True
+
+# systemd-networkd features that Netplan cannot express natively. Keys are
+# Netplan device IDs, not kernel interface names.
+netplan_networkd_dropins: {}
+netplan_networkd_dropins_reconfigure: false
+netplan_networkd_dropins_restart: false

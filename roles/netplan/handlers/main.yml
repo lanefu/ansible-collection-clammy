@@ -10,3 +10,8 @@
   listen: netplan apply config
   become: true
   when: netplan_apply
+
+- name: Reload systemd-networkd
+  ansible.builtin.command:
+    cmd: networkctl reload
+  become: true

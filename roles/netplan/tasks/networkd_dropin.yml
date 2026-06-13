@@ -1,0 +1,136 @@
+---
+- name: Derive networkd unit details for {{ _netplan_dropin.key }}
+  ansible.builtin.set_fact:
+    _netplan_dropin_unit: >-
+      {{
+        _netplan_dropin.value.unit_name
+        | default('10-netplan-' ~ _netplan_dropin.key ~ '.network')
+      }}
+    _netplan_dropin_names: >-
+      {{
+        _netplan_dropin.value.dropins
+        | default([])
+        | map(attribute='name')
+        | list
+      }}
+
+- name: Validate networkd unit override for {{ _netplan_dropin.key }}
+  ansible.builtin.assert:
+    that:
+      - _netplan_dropin_unit is match('^[A-Za-z0-9_.@-]+\\.network$')
+      - _netplan_dropin_names | unique | length == _netplan_dropin_names | length
+    fail_msg: >-
+      Netplan ID '{{ _netplan_dropin.key }}' has an invalid unit_name or
+      duplicate drop-in filenames.
+
+- name: Validate networkd drop-in filenames for {{ _netplan_dropin.key }}
+  ansible.builtin.assert:
+    that:
+      - item is match('^[A-Za-z0-9_.@-]+\\.conf$')
+    fail_msg: >-
+      Drop-in filename '{{ item }}' for Netplan ID
+      '{{ _netplan_dropin.key }}' must be a basename ending in .conf.
+  loop: "{{ _netplan_dropin_names }}"
+
+- name: Check generated networkd unit for {{ _netplan_dropin.key }}
+  ansible.builtin.stat:
+    path: "/run/systemd/network/{{ _netplan_dropin_unit }}"
+  register: _netplan_generated_unit
+  become: true
+
+- name: Require generated networkd unit for {{ _netplan_dropin.key }}
+  ansible.builtin.assert:
+    that:
+      - _netplan_generated_unit.stat.exists
+    fail_msg: >-
+      Netplan ID '{{ _netplan_dropin.key }}' did not generate
+      /run/systemd/network/{{ _netplan_dropin_unit }}. Set unit_name only when
+      Netplan uses a nonstandard generated filename.
+
+- name: Ensure networkd drop-in directory for {{ _netplan_dropin.key }}
+  ansible.builtin.file:
+    path: "/etc/systemd/network/{{ _netplan_dropin_unit }}.d"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  become: true
+
+- name: Read prior managed-drop-in manifest for {{ _netplan_dropin.key }}
+  ansible.builtin.slurp:
+    src: "/etc/systemd/network/{{ _netplan_dropin_unit }}.d/.lanefu-clammy-managed"
+  register: _netplan_dropin_manifest
+  failed_when: false
+  become: true
+
+- name: Remove obsolete managed drop-ins for {{ _netplan_dropin.key }}
+  ansible.builtin.file:
+    path: "/etc/systemd/network/{{ _netplan_dropin_unit }}.d/{{ item }}"
+    state: absent
+  loop: >-
+    {{
+      (
+        (_netplan_dropin_manifest.content | default('') | b64decode).splitlines()
+        | difference(_netplan_dropin_names)
+      )
+    }}
+  notify: Reload systemd-networkd
+  register: _netplan_dropin_removal
+  become: true
+
+- name: Install networkd drop-ins for {{ _netplan_dropin.key }}
+  ansible.builtin.copy:
+    content: "{{ item.content }}"
+    dest: "/etc/systemd/network/{{ _netplan_dropin_unit }}.d/{{ item.name }}"
+    owner: root
+    group: root
+    mode: "{{ item.mode | default('0644') }}"
+  loop: "{{ _netplan_dropin.value.dropins | default([]) }}"
+  loop_control:
+    label: "{{ item.name }}"
+  register: _netplan_dropin_install
+  notify: Reload systemd-networkd
+  become: true
+
+- name: Write managed-drop-in manifest for {{ _netplan_dropin.key }}
+  ansible.builtin.copy:
+    content: "{{ (_netplan_dropin_names | join('\n')) ~ ('\n' if _netplan_dropin_names | length > 0 else '') }}"
+    dest: "/etc/systemd/network/{{ _netplan_dropin_unit }}.d/.lanefu-clammy-managed"
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+
+- name: Render merged networkd unit and drop-ins for {{ _netplan_dropin.key }}
+  ansible.builtin.command:
+    cmd: "systemd-analyze cat-config systemd/network/{{ _netplan_dropin_unit }}"
+  become: true
+  changed_when: false
+  check_mode: false
+  register: _netplan_dropin_merged
+
+- name: Require merged networkd configuration for {{ _netplan_dropin.key }}
+  ansible.builtin.assert:
+    that:
+      - _netplan_dropin_merged.stdout is search('\\[Match\\]')
+      - _netplan_dropin_merged.stdout is search('\\[Network\\]')
+    fail_msg: >-
+      systemd-analyze could not render the generated networkd unit and its
+      drop-ins for Netplan ID '{{ _netplan_dropin.key }}'.
+
+- name: Reconfigure networkd link for {{ _netplan_dropin.key }}
+  ansible.builtin.command:
+    cmd: "networkctl reconfigure {{ _netplan_dropin.key }}"
+  become: true
+  when:
+    - netplan_networkd_dropins_reconfigure | bool
+    - _netplan_dropin_install.changed or _netplan_dropin_removal.changed
+
+- name: Restart systemd-networkd for drop-in changes
+  ansible.builtin.systemd:
+    name: systemd-networkd
+    state: restarted
+  become: true
+  when:
+    - netplan_networkd_dropins_restart | bool
+    - _netplan_dropin_install.changed or _netplan_dropin_removal.changed

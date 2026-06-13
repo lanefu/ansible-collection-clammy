@@ -85,6 +85,33 @@ my_wireguard_private_key: !vault |
 
 MIT
 
+## systemd-networkd drop-ins
+
+Use `netplan_networkd_dropins` for networkd features that Netplan does not
+expose. Keys are Netplan device IDs; the role derives and verifies the
+generated `10-netplan-<ID>.network` filename.
+
+```yaml
+netplan_networkd_dropins:
+  wan:
+    dropins:
+      - name: 50-dhcpv6-pd.conf
+        content: |
+          [DHCPv6]
+          PrefixDelegationHint=::/56
+```
+
+The role runs `netplan generate`, requires the generated unit to exist,
+removes only obsolete files listed in its own manifest, renders the merged
+unit and drop-ins with `systemd-analyze cat-config`, and reloads networkd.
+`systemd-analyze verify` is not used because systemd rejects `.network` files
+as service-unit inputs.
+
+Links are not reconfigured and networkd is not restarted unless
+`netplan_networkd_dropins_reconfigure` or
+`netplan_networkd_dropins_restart` is explicitly enabled. Set `unit_name`
+beneath a device only when Netplan generates a nonstandard filename.
+
 ## Author Information
 
 Larry Smith Jr.

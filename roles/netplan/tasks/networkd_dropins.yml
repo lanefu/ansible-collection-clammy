@@ -1,0 +1,45 @@
+---
+- name: Reset Netplan device ID list
+  ansible.builtin.set_fact:
+    _netplan_device_ids: []
+
+- name: Build list of Netplan device IDs
+  ansible.builtin.set_fact:
+    _netplan_device_ids: >-
+      {{
+        (_netplan_device_ids | default([]))
+        + (netplan_configuration.network[item] | default({}) | dict2items | map(attribute='key') | list)
+      }}
+  loop:
+    - ethernets
+    - wifis
+    - bonds
+    - bridges
+    - vlans
+    - tunnels
+    - dummy-devices
+
+- name: Validate networkd drop-in Netplan IDs
+  ansible.builtin.assert:
+    that:
+      - item.key in _netplan_device_ids
+    fail_msg: >-
+      netplan_networkd_dropins references unknown Netplan ID '{{ item.key }}'.
+      IDs in this role invocation: {{ _netplan_device_ids | join(', ') }}
+  loop: "{{ netplan_networkd_dropins | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+
+- name: Generate networkd units before installing drop-ins
+  ansible.builtin.command:
+    cmd: netplan generate
+  become: true
+  changed_when: false
+  check_mode: false
+
+- name: Manage Netplan networkd drop-ins
+  ansible.builtin.include_tasks: networkd_dropin.yml
+  loop: "{{ netplan_networkd_dropins | dict2items }}"
+  loop_control:
+    loop_var: _netplan_dropin
+    label: "{{ _netplan_dropin.key }}"

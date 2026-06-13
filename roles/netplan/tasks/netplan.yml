@@ -8,3 +8,7 @@
     - netplan_remove_existing
 
 - import_tasks: configure.yml
+
+- import_tasks: networkd_dropins.yml
+  when:
+    - netplan_networkd_dropins | length > 0

@@ -1,0 +1,33 @@
+---
+- name: Verify Netplan ID to networkd unit derivation
+  hosts: localhost
+  gather_facts: false
+  vars:
+    netplan_test_devices:
+      ethernet_id:
+        type: ethernet
+      bond_id:
+        type: bond
+      vlan_id:
+        type: vlan
+      renamed_id:
+        type: ethernet
+        set_name: lan0
+  tasks:
+    - name: Derive generated networkd unit names
+      ansible.builtin.set_fact:
+        netplan_test_units: >-
+          {{
+            netplan_test_units | default({})
+            | combine({item.key: '10-netplan-' ~ item.key ~ '.network'})
+          }}
+      loop: "{{ netplan_test_devices | dict2items }}"
+
+    - name: Confirm filenames use Netplan IDs
+      ansible.builtin.assert:
+        that:
+          - netplan_test_units.ethernet_id == '10-netplan-ethernet_id.network'
+          - netplan_test_units.bond_id == '10-netplan-bond_id.network'
+          - netplan_test_units.vlan_id == '10-netplan-vlan_id.network'
+          - netplan_test_units.renamed_id == '10-netplan-renamed_id.network'
+          - netplan_test_units.renamed_id != '10-netplan-lan0.network'
